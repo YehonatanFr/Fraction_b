@@ -23,6 +23,27 @@ namespace ariel
         reduce();
     }
 
+    Fraction::Fraction() : numerator_(0), denominator_(1) {
+
+    }
+
+    Fraction::Fraction(const Fraction& other){
+        this->denominator_ = other.getDenominator();
+        this->numerator_ = other.getNumerator();
+    }
+
+    Fraction::Fraction(float value) {
+        int denom = 1;
+        while (value - floor(value) > 0.001 && denom <= 1000) {
+            value *= 10;
+            denom *= 10;
+        }
+        int nume = static_cast<int>(value);
+        this->numerator_ = nume;
+        this->denominator_ = denom;
+        reduce();
+    }
+
     //Getters & Setters
     int Fraction::getNumerator() const
     {

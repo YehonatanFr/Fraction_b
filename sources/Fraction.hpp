@@ -18,7 +18,10 @@ namespace ariel
 
     public:
         //Constructor
+        Fraction();
+        Fraction(float);
         Fraction(int, int);
+        Fraction(const Fraction& other);
         
         //destructor
         ~Fraction();
