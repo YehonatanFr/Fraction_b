@@ -2,6 +2,7 @@
 #include <iostream>
 #include <cmath>
 #include <sstream>
+#include <climits>
 #include <string>
 
 
@@ -78,6 +79,11 @@ namespace ariel
             numerator_ *= -1;
             denominator_ *= -1;
         }
+
+        if(denominator_ < 0 && numerator_ <0){
+            numerator_ = abs(numerator_);
+            denominator_ = abs(denominator_);
+        }
     }
 
     int Fraction::gcd(int a, int b) const{
@@ -97,8 +103,20 @@ namespace ariel
         denominator_ /= gcd_val;
     }
 
-    //Operators implemention
+    void Fraction::CheckNum(long numerator_sum, long denominator_sum) {
+        if (numerator_sum > INT_MAX || denominator_sum > INT_MAX || numerator_sum < INT_MIN ||
+            denominator_sum < INT_MIN) {
+            throw overflow_error("Fraction result is too large to be represented as an integer");
+        }
+    }
 
+    float Fraction::fraction_to_float() const {
+        float tempFloat =  static_cast<float>(this->numerator_) / this->denominator_;
+        float float_num = round(tempFloat * 1000) / 1000;
+        return float_num;
+    }
+
+    //Operators implemention
     Fraction& Fraction::operator=(const Fraction &other){
         if (this != &other)
         {
@@ -271,12 +289,12 @@ namespace ariel
     }
 
 
-    ostream& operator<<(std::ostream& os, const Fraction& f)
+    ostream& operator<<(std::ostream& os, const Fraction& other)
     {
-        return os;
+        return os << other.getNumerator() << '/' << other.getDenominator();
     }
 
-    istream& operator>>(std::istream& is, Fraction& f)
+    istream& operator>>(std::istream& is, Fraction& other)
     {
         return is;
     }

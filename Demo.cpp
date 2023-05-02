@@ -29,6 +29,10 @@ int main() {
     cout << c++ << endl;
     cout << --c << endl;
 
+    // float f_num = a.fraction_to_float();
+    // Fraction d = f_num;
+    // cout << "Frac: "<< a << " From Frac to float: " << f_num << endl;
+    // cout << "Fron float to frac: " << d << endl;
     cout << "c >=b ? : " << (c >= b) << endl;
     if (a > 1.1) cout << " a is bigger than 1.1" << endl;
     else cout << " a is smaller than 1.1" << endl;

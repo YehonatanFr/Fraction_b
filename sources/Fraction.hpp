@@ -30,6 +30,9 @@ namespace ariel
         void reduce();
         int gcd(int num1, int num2) const;
         int lcm(int num1, int num2) const;
+        void CheckNum(long num1, long num);
+        float fraction_to_float() const;
+        float float_to_fraction() const;
 
         //Getters & Setters
         int getNumerator() const;
