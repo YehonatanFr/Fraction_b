@@ -13,6 +13,7 @@ using namespace std;
 
 #include "sources/Fraction.hpp"
 
+
 using namespace ariel;
 
 
@@ -28,12 +29,6 @@ int main() {
     Fraction c = a+b-1;
     cout << c++ << endl;
     cout << --c << endl;
-
-    // float temp = 0.3333;
-    // // float f_num = a.fraction_to_float();
-    // Fraction d = Fraction(temp);
-    // cout << "Frac: "<< a << " From Frac to float: " << f_num << endl;
-    // cout << "Fron float to frac: " << d << endl;
     cout << "c >=b ? : " << (c >= b) << endl;
     if (a > 1.1) cout << " a is bigger than 1.1" << endl;
     else cout << " a is smaller than 1.1" << endl;

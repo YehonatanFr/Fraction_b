@@ -11,26 +11,18 @@ using namespace std;
 
 namespace ariel
 {
-    Fraction::~Fraction(){
+
+    //Constructors
+    Fraction::Fraction() : numerator_(0), denominator_(1) {
 
     }
-    
-    //Constructor
+
     Fraction::Fraction(int num, int den) {
         if (den == 0)
             throw invalid_argument("Denominator can't be zero.");
         this->numerator_ = num;
         this->denominator_ = den;
         reduce();
-    }
-
-    Fraction::Fraction() : numerator_(0), denominator_(1) {
-
-    }
-
-    Fraction::Fraction(const Fraction& other){
-        this->denominator_ = other.getDenominator();
-        this->numerator_ = other.getNumerator();
     }
 
     Fraction::Fraction(float value) {
@@ -107,39 +99,70 @@ namespace ariel
         denominator_ /= gcd_val;
     }
 
-    void Fraction::CheckNum(Fraction other){
+    void Fraction::CheckNum(Fraction other) const{
         if(other.getDenominator()>=INT_MAX||other.getDenominator()<=INT_MIN||other.getNumerator()>=INT_MAX||other.getNumerator()<=INT_MIN)
             throw overflow_error("Fraction result is too large to be represented as an integer");
     }
 
-    float Fraction::fraction_to_float(const Fraction& other) const {
+    float Fraction::fraction_to_float() const {
         float tempFloat =  static_cast<float>(this->numerator_) / this->denominator_;
-        float float_num = round(tempFloat * 1000) / 1000;
+        float float_num = floor(tempFloat * 1000) / 1000;
         return float_num;
     }
 
     //Operators implemention
 
     Fraction Fraction::operator+(const Fraction& other) const{
+        CheckNum(*this);
+        CheckNum(other);
         int tempLcm = lcm(denominator_, other.denominator_);
         int numerator = numerator_ * (tempLcm / denominator_) + other.numerator_ * (tempLcm / other.denominator_);
-        return Fraction(numerator, tempLcm);
+        Fraction temp =  Fraction(numerator, tempLcm); 
+        // CheckNum(temp);
+        return temp;
 
     }
     Fraction Fraction::operator-(const Fraction& other) const{
+        long sum_n = (long(this -> numerator_) * other.getDenominator()) - (long(other.getNumerator()) * this -> denominator_);
+        long sum_d = long(this->denominator_) * other.getDenominator();
+
+        if (sum_n > INT_MAX || sum_d > INT_MAX ||  sum_n < INT_MIN || sum_d < INT_MIN){
+            throw overflow_error ("Fraction result is too large to be represented as an integer");
+        }
+
         int tempLcm = lcm(denominator_, other.denominator_);
         int numerator = numerator_ * (tempLcm / denominator_) - other.numerator_ * (tempLcm / other.denominator_);
-        return Fraction(numerator, tempLcm);
+        Fraction temp = Fraction(numerator, tempLcm);
+        return temp;
     }
+
     Fraction Fraction::operator*(const Fraction& other) const{
+        long sum_n = long(this->numerator_) * other.getNumerator();
+        long sum_d = long(this->denominator_) * other.getDenominator();
+        if (sum_n > INT_MAX || sum_d > INT_MAX ||  sum_n < INT_MIN || sum_d < INT_MIN){
+            throw overflow_error ("Fraction result is too large to be represented as an integer");
+        }
+
         int numerator = numerator_ * other.numerator_;
         int denominator = denominator_ * other.denominator_;
-        return Fraction(numerator, denominator);
+        Fraction temp =  Fraction(numerator, denominator);
+        return temp;
     }
+
     Fraction Fraction::operator/(const Fraction& other) const{
+        if (other.getDenominator() == 0 || other.getNumerator() == 0 ){
+            throw runtime_error("Denominator can't be zero.");
+        }
+        long sum_n = long(this->numerator_) * other.getDenominator();
+        long sum_d = long(this->denominator_) * other.getNumerator();
+        if (sum_n > INT_MAX || sum_d > INT_MAX ||  sum_n < INT_MIN || sum_d < INT_MIN){
+            throw overflow_error ("error : overflow");
+        }
+
         int numerator = numerator_ * other.denominator_;
         int denominator = denominator_ * other.numerator_;
-        return Fraction(numerator, denominator);
+        Fraction temp = Fraction(numerator, denominator);
+        return temp;
     }
 
 
@@ -171,12 +194,12 @@ namespace ariel
     }
 
     bool Fraction::operator==(const Fraction& other) const {
-        Fraction a = *this;
-        Fraction b = other;
-        a.reduce();
-        b.reduce();
-        return (a.numerator_ == b.numerator_ && a.denominator_ == b.denominator_);
+        float num = (*this).fraction_to_float();
+        float temp = other.fraction_to_float();
+
+        return (num == temp);
     }
+
 
     bool Fraction::operator>(const Fraction& other) const {
         int lcm_ = lcm(denominator_, other.denominator_);
@@ -238,6 +261,10 @@ namespace ariel
 
     // Division
     Fraction operator/(const Fraction& other, const float float_num) {
+        if(other.getDenominator() == 0 || float_num == 0)
+        {
+            throw runtime_error("Denominator can't be zero.");
+        }
         Fraction temp = Fraction(float_num);
         return Fraction(other.getNumerator() * temp.getDenominator(), other.getDenominator() * temp.getNumerator());
     }
@@ -258,6 +285,7 @@ namespace ariel
         Fraction temp = Fraction(float_num);
         return other == temp;
     }
+    
 
     bool operator>(const Fraction& other, const float &float_num) {
         Fraction temp = Fraction(float_num);
@@ -304,13 +332,6 @@ namespace ariel
     {
         return os << other.getNumerator() << '/' << other.getDenominator();
     }
-
-    // istream& operator>>(istream& is, const Fraction& other)
-    // {
-    //     is >> other.getNumerator() >> other.getDenominator();
-    //     if(!is)  throw runtime_error("error : invalid input");
-    //     return is;
-    // }
     
     istream& operator>>(istream& iso, Fraction& other){
         int num_ ,den_;

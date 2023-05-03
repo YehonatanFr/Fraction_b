@@ -21,17 +21,13 @@ namespace ariel
         Fraction();
         Fraction(float);
         Fraction(int, int);
-        Fraction(const Fraction& other);
-        
-        //destructor
-        ~Fraction();
         
         //Helpers
         void reduce();
         int gcd(int num1, int num2) const;
         int lcm(int num1, int num2) const;
-        void CheckNum(Fraction other);
-        float fraction_to_float(const Fraction& other) const;
+        void CheckNum(Fraction other) const;
+        float fraction_to_float() const;
 
         //Getters & Setters
         int getNumerator() const;
@@ -63,16 +59,16 @@ namespace ariel
         friend std::istream& operator>>(std::istream& is_, Fraction& other);
 
         //Functions with friend implemention for float
-        friend Fraction operator+ (const float float_num, const Fraction& other);
-        friend Fraction operator+ (const Fraction& other, const float float_num);
+        friend Fraction operator+ (float float_num, const Fraction& other);
+        friend Fraction operator+ (const Fraction& other, float float_num);
         
-        friend Fraction operator* (const float float_num, const Fraction& other);
-        friend Fraction operator* (const Fraction& other, const float float_num);
+        friend Fraction operator* (float float_num, const Fraction& other);
+        friend Fraction operator* (const Fraction& other, float float_num);
         
-        friend Fraction operator/ (const float float_num, const Fraction& other);
-        friend Fraction operator/ (const Fraction& other, const float float_num);
+        friend Fraction operator/ (float float_num, const Fraction& other);
+        friend Fraction operator/ (const Fraction& other, float float_num);
         
-        friend Fraction operator- (const Fraction& other, const float float_num);
+        friend Fraction operator- (const Fraction& other, float float_num);
         friend Fraction operator- (float float_num, const Fraction& other);
         
         friend bool operator==(const Fraction& other, float float_num);
