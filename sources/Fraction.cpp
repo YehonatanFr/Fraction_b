@@ -35,11 +35,12 @@ namespace ariel
 
     Fraction::Fraction(float value) {
         int denom = 1;
-        while (value - floor(value) > 0.001 && denom <= 1000) {
-            value *= 10;
+        float temp = floor(value * 1000) / 1000;
+        while (temp - floor(temp) > 0.001 && denom <= 1000) {
+            temp *= 10;
             denom *= 10;
         }
-        int nume = static_cast<int>(value);
+        int nume = static_cast<int>(temp);
         this->numerator_ = nume;
         this->denominator_ = denom;
         reduce();
@@ -75,15 +76,18 @@ namespace ariel
         int tempGcd = gcd(abs(numerator_), abs(denominator_));
         numerator_ /= tempGcd;
         denominator_ /= tempGcd;
-        if (denominator_ < 0) {
-            numerator_ *= -1;
-            denominator_ *= -1;
-        }
 
         if(denominator_ < 0 && numerator_ <0){
             numerator_ = abs(numerator_);
             denominator_ = abs(denominator_);
         }
+
+        if (denominator_ < 0) {
+            numerator_ *= -1;
+            denominator_ *= -1;
+        }
+
+
     }
 
     int Fraction::gcd(int a, int b) const{
@@ -103,28 +107,19 @@ namespace ariel
         denominator_ /= gcd_val;
     }
 
-    void Fraction::CheckNum(long numerator_sum, long denominator_sum) {
-        if (numerator_sum > INT_MAX || denominator_sum > INT_MAX || numerator_sum < INT_MIN ||
-            denominator_sum < INT_MIN) {
+    void Fraction::CheckNum(Fraction other){
+        if(other.getDenominator()>=INT_MAX||other.getDenominator()<=INT_MIN||other.getNumerator()>=INT_MAX||other.getNumerator()<=INT_MIN)
             throw overflow_error("Fraction result is too large to be represented as an integer");
-        }
     }
 
-    float Fraction::fraction_to_float() const {
+    float Fraction::fraction_to_float(const Fraction& other) const {
         float tempFloat =  static_cast<float>(this->numerator_) / this->denominator_;
         float float_num = round(tempFloat * 1000) / 1000;
         return float_num;
     }
 
     //Operators implemention
-    Fraction& Fraction::operator=(const Fraction &other){
-        if (this != &other)
-        {
-            numerator_ = other.numerator_;
-            denominator_ = other.denominator_;
-        }
-        return *this;
-    }
+
     Fraction Fraction::operator+(const Fraction& other) const{
         int tempLcm = lcm(denominator_, other.denominator_);
         int numerator = numerator_ * (tempLcm / denominator_) + other.numerator_ * (tempLcm / other.denominator_);
@@ -175,7 +170,6 @@ namespace ariel
 
     }
 
-
     bool Fraction::operator==(const Fraction& other) const {
         Fraction a = *this;
         Fraction b = other;
@@ -199,104 +193,137 @@ namespace ariel
         return (this->operator>(other) || this->operator==(other));
     }
 
-    bool Fraction::operator<=(Fraction& other) const {
+    bool Fraction::operator<=(const Fraction& other) const {
         return (this->operator<(other) || this->operator==(other));
     }
 
-    bool Fraction::operator!= (Fraction& other) const {
+    bool Fraction::operator!= (const Fraction& other) const {
         return !(this->operator==(other));
     }
 
 
     // Friend functions for Fraction and float operations
     // Addition
-    Fraction operator+(float float_num, const Fraction& other) {
-        return Fraction(3,4);
+    Fraction operator+(const float float_num, const Fraction& other) {
+        Fraction temp = Fraction(float_num);
+        return temp + other;
     }
 
-    Fraction operator+(const Fraction& other, float float_num) {
-        return float_num + other;
+    Fraction operator+(const Fraction& other, const float float_num) {
+        Fraction temp = Fraction(float_num);
+        return temp + other;
     }
 
     // Subtraction
-    Fraction operator-(const Fraction& other, float float_num) {
-        return other + (-float_num);
+    Fraction operator-(const Fraction& other, const float float_num) {
+        Fraction temp = Fraction(float_num);
+        return other - temp;
     }
 
-    Fraction operator-(float float_num, const Fraction& other) {
-        return Fraction(3,4);
+    Fraction operator-(const float float_num, const Fraction& other) {
+        Fraction temp = Fraction(float_num);
+        return temp - other;
     }
 
     // Multiplication
-    Fraction operator*(const Fraction& other, float float_num) {
-        Fraction f(float_num, 1);
-        return Fraction(other.getNumerator() * f.getNumerator(), other.getDenominator() * f.getDenominator());
+    Fraction operator*(const Fraction& other, const float float_num) {
+        Fraction temp = Fraction(float_num);
+        return Fraction(other.getNumerator() * temp.getNumerator(), other.getDenominator() * temp.getDenominator());
     }
 
-    Fraction operator*(float float_num, const Fraction& other) {
-        return other * float_num;
+    Fraction operator*(const float float_num, const Fraction& other) {
+        Fraction temp = Fraction(float_num);
+        return Fraction(temp.getNumerator() * other.getNumerator() , temp.getDenominator() * other.getDenominator());
     }
 
     // Division
-    Fraction operator/(const Fraction& other, float float_num) {
-        return Fraction(3,4);
+    Fraction operator/(const Fraction& other, const float float_num) {
+        Fraction temp = Fraction(float_num);
+        return Fraction(other.getNumerator() * temp.getDenominator(), other.getDenominator() * temp.getNumerator());
     }
 
-    Fraction operator/(float float_num, const Fraction& other) {
-        return Fraction(3,4);
+    Fraction operator/(const float float_num, const Fraction& other) {
+        Fraction temp = Fraction(float_num);
+        return Fraction(temp.getNumerator() * other.getDenominator() , temp.getDenominator() * other.getNumerator()); 
     }
 
 
     // Comparison operations
-    bool operator>(const Fraction& other, float float_num) {
-        float tempFloat = (float)other.getNumerator() / other.getDenominator();
-        return tempFloat > float_num;
+    bool operator==(const Fraction& other, float float_num){
+        Fraction temp = Fraction(float_num);
+        return other == temp;
     }
 
-    bool operator>(float float_num, const Fraction& other) {
-        float tempFloat = (float)other.getNumerator() / other.getDenominator();
-        return float_num > tempFloat;
+    bool operator==(float float_num, const Fraction& other){
+        Fraction temp = Fraction(float_num);
+        return other == temp;
     }
 
-    bool operator<(const Fraction& other, float float_num) {
-        float tempFloat = (float)other.getNumerator() / other.getDenominator();
-        return tempFloat < float_num;
+    bool operator>(const Fraction& other, const float &float_num) {
+        Fraction temp = Fraction(float_num);
+        return other > temp;
     }
 
-    bool operator<(float float_num, const Fraction& other) {
-        float tempFloat = (float)other.getNumerator() / other.getDenominator();
-        return float_num < tempFloat;
+    bool operator>(const float &float_num, const Fraction& other) {
+        Fraction temp = Fraction(float_num);
+        return temp > other;
     }
 
-    bool operator>=(const Fraction& other, float float_num) {
-        float tempFloat = (float)other.getNumerator() / other.getDenominator();
-        return tempFloat >= float_num;
+    bool operator<(const Fraction& other, const float &float_num) {
+        Fraction temp = Fraction(float_num);;
+        return other < temp;
     }
 
-    bool operator>=(float float_num, const Fraction& other) {
-        float tempFloat = (float)other.getNumerator() / other.getDenominator();
-        return float_num >= tempFloat;
+    bool operator<(const float &float_num, const Fraction& other) {
+        Fraction temp = Fraction(float_num);
+        return temp < other;
     }
 
-    bool operator<=(const Fraction& other, float float_num) {
-        float tempFloat = (float)other.getNumerator() / other.getDenominator();
-        return tempFloat <= float_num;
+    bool operator>=(const Fraction& other, const float &float_num) {
+        Fraction temp = Fraction(float_num);
+        return  other >= temp;
     }
 
-    bool operator<=(float float_num, const Fraction& other) {
-        float tempFloat = (float)other.getNumerator() / other.getDenominator();
-        return float_num <= tempFloat;
+    bool operator>=(const float &float_num, const Fraction& other) {
+       Fraction temp = Fraction(float_num);
+        return temp >= other;
+    }
+
+    bool operator<=(const Fraction& other, const float &float_num) {
+        Fraction temp = Fraction(float_num);
+        return other <= temp;
+    }
+
+    bool operator<=(const float &float_num, const Fraction& other) {
+        Fraction temp = Fraction(float_num);
+        return temp <= other;
     }
 
 
-    ostream& operator<<(std::ostream& os, const Fraction& other)
+    ostream& operator<<(ostream& os, const Fraction& other)
     {
         return os << other.getNumerator() << '/' << other.getDenominator();
     }
 
-    istream& operator>>(std::istream& is, Fraction& other)
-    {
-        return is;
+    // istream& operator>>(istream& is, const Fraction& other)
+    // {
+    //     is >> other.getNumerator() >> other.getDenominator();
+    //     if(!is)  throw runtime_error("error : invalid input");
+    //     return is;
+    // }
+    
+    istream& operator>>(istream& iso, Fraction& other){
+        int num_ ,den_;
+
+        iso >> num_ >> den_;
+
+        if((iso.fail()) || (den_ == 0)){
+            throw runtime_error("invalid input: 2 arguments needed: <numerator>  <denominator>\n");
+        }
+        else{
+            other = Fraction(num_, den_);
+        }
+        return iso;
     }
 }
 

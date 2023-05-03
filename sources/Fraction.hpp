@@ -30,9 +30,8 @@ namespace ariel
         void reduce();
         int gcd(int num1, int num2) const;
         int lcm(int num1, int num2) const;
-        void CheckNum(long num1, long num);
-        float fraction_to_float() const;
-        float float_to_fraction() const;
+        void CheckNum(Fraction other);
+        float fraction_to_float(const Fraction& other) const;
 
         //Getters & Setters
         int getNumerator() const;
@@ -41,7 +40,6 @@ namespace ariel
         void setDenominator(int denominator); 
 
         //Basic operators
-        Fraction& operator=(const Fraction &other);
         Fraction operator+(const Fraction& other) const;
         Fraction operator-(const Fraction& other) const;
         Fraction operator*(const Fraction& other) const;
@@ -57,37 +55,40 @@ namespace ariel
         bool operator>(const Fraction& other) const;
         bool operator<(const Fraction& other) const;
         bool operator>=(const Fraction& other) const;
-        bool operator<=(Fraction& other) const;
-        bool operator!= (Fraction& other) const;
+        bool operator<=(const Fraction& other) const;
+        bool operator!= (const Fraction& other) const;
 
         //Other operations
         friend std::ostream& operator<<(std::ostream& os_, const Fraction& other);
         friend std::istream& operator>>(std::istream& is_, Fraction& other);
 
         //Functions with friend implemention for float
-        friend Fraction operator+ (float float_num, const Fraction& other);
-        friend Fraction operator+ (const Fraction& other, float float_num);
+        friend Fraction operator+ (const float float_num, const Fraction& other);
+        friend Fraction operator+ (const Fraction& other, const float float_num);
         
-        friend Fraction operator* (float float_num, const Fraction& other);
-        friend Fraction operator* (const Fraction& other, float float_num);
+        friend Fraction operator* (const float float_num, const Fraction& other);
+        friend Fraction operator* (const Fraction& other, const float float_num);
         
-        friend Fraction operator/ (float float_num, const Fraction& other);
-        friend Fraction operator/ (const Fraction& other, float float_num);
+        friend Fraction operator/ (const float float_num, const Fraction& other);
+        friend Fraction operator/ (const Fraction& other, const float float_num);
         
-        friend Fraction operator- (const Fraction& other, float float_num);
+        friend Fraction operator- (const Fraction& other, const float float_num);
         friend Fraction operator- (float float_num, const Fraction& other);
         
-        friend bool operator> (float float_num, const Fraction& other);
-        friend bool operator> (const Fraction& other, float float_num);
+        friend bool operator==(const Fraction& other, float float_num);
+        friend bool operator==(float float_num, const Fraction& other);
+
+        friend bool operator> (const float &float_num, const Fraction& other);
+        friend bool operator> (const Fraction& other, const float &float_num);
         
-        friend bool operator< (float float_num, const Fraction& other);
-        friend bool operator< (const Fraction& other, float float_num);
+        friend bool operator< (const float &float_num, const Fraction& other);
+        friend bool operator< (const Fraction& other, const float &float_num);
         
-        friend bool operator>= (float float_num, const Fraction& other);
-        friend bool operator>= (const Fraction& other, float float_num);
+        friend bool operator>= (const float &float_num, const Fraction& other);
+        friend bool operator>= (const Fraction& other, const float &float_num);
         
-        friend bool operator<= (float float_num, const Fraction& other);
-        friend bool operator<= (const Fraction& other, float float_num);
+        friend bool operator<= (const float &float_num, const Fraction& other);
+        friend bool operator<= (const Fraction& other, const float &float_num);
 
     };
 }
